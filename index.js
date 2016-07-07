@@ -36,6 +36,7 @@ function optionsFromArguments(args) {
   options = requiredOrFromEnvironment(options, 'bucket', 'GCS_BUCKET');
   options = fromEnvironmentOrDefault(options, 'bucketPrefix', 'GCS_BUCKET_PREFIX', '');
   options = fromEnvironmentOrDefault(options, 'directAccess', 'GCS_DIRECT_ACCESS', false);
+  options = fromEnvironmentOrDefault(options, 'https', 'GCS_HTTPS_ACCESS', false);
   return options;
 }
 
@@ -132,7 +133,8 @@ GCSAdapter.prototype.getFileLocation = function(config, filename) {
   if (this._directAccess) {
     return `https://storage.googleapis.com/${this._bucket}/${this._bucketPrefix + filename}`;
   }
-  return (config.mount + '/files/' + config.applicationId + '/' + encodeURIComponent(filename));
+  var mountLoc = (this._https) ? config.mount.replace("http:","https:") : config.mount;
+  return (mountLoc + '/files/' + config.applicationId + '/' + encodeURIComponent(filename));
 }
 
 module.exports = GCSAdapter;
